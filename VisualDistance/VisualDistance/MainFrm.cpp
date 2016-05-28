@@ -486,7 +486,7 @@ void CMainFrame::OnEditAjust()
 	CString strCmd;
 	if (IDOK == m_dlgAjust.DoModal())
 	{
-		strCmd.Format(_T("AjustSet %d %d\r\n"), m_dlgAjust.m_uStepId - 1, m_dlgAjust.m_nAjust);
+		strCmd.Format(_T("AjustSet %d %d\r\n"), m_dlgAjust.m_uStepId, m_dlgAjust.m_nAjust);
 		m_serial.WriteSerial(strCmd);
 		OnEditReset();
 	}

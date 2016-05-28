@@ -51,11 +51,6 @@ BOOL CDlgAjust::OnInitDialog()
 	}
 	m_cmbStepId.SetCurSel(m_uStepId);
 
-	if (50 < ++m_uStepId)
-	{
-		m_uStepId = 50;
-	}
-
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // EXCEPTION: OCX Property Pages should return FALSE
 }
@@ -63,6 +58,7 @@ BOOL CDlgAjust::OnInitDialog()
 
 void CDlgAjust::OnBnClickedOk()
 {
+	m_uStepId = m_cmbStepId.GetCurSel();
 	UpdateData();
 	CDialogEx::OnOK();
 }
