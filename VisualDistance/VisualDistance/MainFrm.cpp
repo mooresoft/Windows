@@ -477,6 +477,8 @@ void CMainFrame::OnEditReset()
 {
 	EnterCriticalSection(&m_csDistance);
 	m_listDistance.clear();
+	m_StartTime = CTime::GetCurrentTime();
+	theApp.m_pVisualView->ClearView();
 	LeaveCriticalSection(&m_csDistance);
 }
 

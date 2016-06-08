@@ -133,7 +133,7 @@ int CVisualDistanceView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_list.InsertColumn(10, _T("TERRIBLE"), LVCFMT_CENTER, 110);
 	m_list.InsertColumn(11, _T("TERRIBLE(%)"), LVCFMT_CENTER, 110);
 	m_list.DeleteColumn(0);	
-
+	theApp.m_pVisualView = this;
 	Start();
 	return 0;
 }
@@ -211,8 +211,8 @@ void CVisualDistanceView::RefreshView()
 			m_list.SetItemText(j, 10, strText);
 			j++;
 		}
-		theApp.m_pMainFrame->ReleaseDistances();
 		m_list.SetRedraw(TRUE);
+		theApp.m_pMainFrame->ReleaseDistances();		
 		
 		theApp.m_pMainFrame->PostMessage(WM_UPDATE_INDICATOR);
 	}
@@ -233,4 +233,10 @@ void CVisualDistanceView::Stop()
 		CloseHandle(m_hRefreshThrd);
 		m_hRefreshThrd = NULL;
 	}
+}
+
+void CVisualDistanceView::ClearView(void)
+{
+	CListCtrl& m_list = GetListCtrl();
+	m_list.DeleteAllItems();
 }
