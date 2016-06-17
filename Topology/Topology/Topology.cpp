@@ -208,6 +208,58 @@ void CTopologyApp::SaveCustomState()
 }
 
 // CTopologyApp message handlers
+int CTopologyApp::CStringToChar(const CString& strSrc, CHAR *szDst, int nDstLen)
+{
+	int lStrCount;
+	int lByteCount = -1;
+	CHAR *pcTmpStr;
 
+	if ((NULL == szDst) || (0 >= nDstLen))
+	{
+		return 0;
+	}
+
+	memset(szDst, 0, nDstLen);
+
+	lStrCount = strSrc.GetLength();
+	if (strSrc.IsEmpty() || (0 == lStrCount))
+	{
+		return 0;
+	}
+
+#ifdef UNICODE
+	lByteCount = WideCharToMultiByte(CP_ACP, 0, strSrc, lStrCount, NULL, 0, NULL, NULL);
+
+	if (lByteCount <= 0)
+	{
+		return lByteCount;
+	}
+
+	pcTmpStr = new CHAR[lByteCount];
+	memset(pcTmpStr, 0, lByteCount);
+
+	WideCharToMultiByte(CP_ACP, 0, strSrc, lStrCount, pcTmpStr, lByteCount, NULL, NULL);
+
+
+	if (lByteCount <= nDstLen)
+	{
+		memcpy_s(szDst, nDstLen, pcTmpStr, lByteCount);
+	}
+
+	delete[] pcTmpStr;
+
+	return lByteCount;
+#else
+	if (lStrCount >= nDstLen)
+	{
+		return 0;
+	}
+	else
+	{
+		memcpy_s(szDst, nDstLen, strSrc, lStrCount);
+		return lStrCount;
+	}
+#endif
+}
 
 

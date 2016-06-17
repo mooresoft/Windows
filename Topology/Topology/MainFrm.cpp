@@ -25,6 +25,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWndEx)
 	ON_WM_CREATE()
 	ON_COMMAND(ID_VIEW_CUSTOMIZE, &CMainFrame::OnViewCustomize)
 	ON_REGISTERED_MESSAGE(AFX_WM_CREATETOOLBAR, &CMainFrame::OnToolbarCreateNew)
+	ON_COMMAND(ID_FILE_OPEN, &CMainFrame::OnFileOpen)
 END_MESSAGE_MAP()
 
 static UINT indicators[] =
@@ -37,9 +38,26 @@ static UINT indicators[] =
 
 // CMainFrame construction/destruction
 
+DWORD __stdcall ReadThrd(LPVOID pParam)
+{
+	CMainFrame* pMainFrame = NULL;
+	
+	if (NULL != pParam)
+	{
+		pMainFrame = (CMainFrame*)pParam;
+		while (TRUE == pMainFrame->m_bRead)
+		{			
+			
+			Sleep(1);
+		}
+	}
+
+	return 0;
+}
 CMainFrame::CMainFrame()
 {
-	// TODO: add member initialization code here
+	m_bRead = FALSE;
+	m_hReadThrd = NULL;
 }
 
 CMainFrame::~CMainFrame()
@@ -239,4 +257,50 @@ BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext)
 	//m_wndSplitter.EnableWindow(FALSE);
 	return TRUE;
 	return CFrameWndEx::OnCreateClient(lpcs, pContext);
+}
+
+
+void CMainFrame::OnFileOpen()
+{
+	if (IDOK == m_dlgOpenSerial.DoModal())
+	{
+		CString strWindowText;
+		OnSerialClose();
+		Sleep(10);
+		if (TRUE == m_serial.InitPort(this, m_dlgOpenSerial.m_nPort, m_dlgOpenSerial.m_nBoudRate))
+		{
+			m_bRead		= TRUE;
+			m_hReadThrd	= CreateThread(NULL, 0, ReadThrd, this, 0, NULL);
+			theApp.m_pMainFrame = this;
+			m_serial.StartMonitor();
+			//m_StartTime = CTime::GetCurrentTime();
+
+			strWindowText.Format(_T("Visual Distance - COM%d"), m_dlgOpenSerial.m_nPort);
+			SetWindowText(strWindowText);
+		}
+		else
+		{
+			MessageBox(_T("Open Serial Port Fail!"));
+		}
+	}
+}
+void CMainFrame::OnSerialClose()
+{
+	m_serial.UninitPort();
+	m_bRead = FALSE;
+	if (NULL != m_hReadThrd)
+	{
+		WaitForSingleObject(m_hReadThrd, INFINITE);
+		CloseHandle(m_hReadThrd);
+		m_hReadThrd = NULL;
+	}
+	return;
+}
+LRESULT CMainFrame::OnRecvSerial(WPARAM wParam, LPARAM lParam)
+{
+	char RecvChar = (char)wParam;
+
+	
+
+	return 0;
 }

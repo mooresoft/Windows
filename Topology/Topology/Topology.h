@@ -8,7 +8,7 @@
 #endif
 
 #include "resource.h"       // main symbols
-
+#include "MainFrm.h"
 
 // CTopologyApp:
 // See Topology.cpp for the implementation of this class
@@ -24,10 +24,10 @@ public:
 public:
 	virtual BOOL InitInstance();
 	virtual int ExitInstance();
-
+	int CStringToChar(const CString& strSrc, CHAR *szDst, int nDstLen);
 // Implementation
 	BOOL  m_bHiColorIcons;
-
+	CMainFrame* m_pMainFrame;
 	virtual void PreLoadState();
 	virtual void LoadCustomState();
 	virtual void SaveCustomState();

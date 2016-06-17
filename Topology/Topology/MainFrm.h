@@ -3,6 +3,8 @@
 //
 
 #pragma once
+#include "serialport.h"
+#include "DlgOpenSerial.h"
 
 class CMainFrame : public CFrameWndEx
 {
@@ -11,9 +13,12 @@ protected: // create from serialization only
 	CMainFrame();
 	DECLARE_DYNCREATE(CMainFrame)
 
+	CSerialPort m_serial;
 // Attributes
 public:
-
+	CDlgOpenSerial m_dlgOpenSerial;
+    HANDLE			  m_hReadThrd;
+	BOOL			  m_bRead;
 // Operations
 public:
 
@@ -42,9 +47,13 @@ protected:
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnViewCustomize();
 	afx_msg LRESULT OnToolbarCreateNew(WPARAM wp, LPARAM lp);
+	afx_msg LRESULT OnRecvSerial(WPARAM wParam, LPARAM lParam);
 	DECLARE_MESSAGE_MAP()
 
 	virtual BOOL OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext);
+public:
+	afx_msg void OnFileOpen();
+	afx_msg void OnSerialClose();
 };
 
 
