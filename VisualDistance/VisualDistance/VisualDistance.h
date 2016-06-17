@@ -9,6 +9,7 @@
 
 #include "resource.h"       // main symbols
 #include "MainFrm.h"
+#include "VisualDistanceView.h"
 
 // CVisualDistanceApp:
 // See VisualDistance.cpp for the implementation of this class
@@ -26,6 +27,7 @@ public:
 	virtual int ExitInstance();
 
 	CMainFrame* m_pMainFrame;
+	CVisualDistanceView* m_pVisualView;
 	int CStringToChar(const CString& strSrc, CHAR *szDst, int nDstLen);
 
 // Implementation

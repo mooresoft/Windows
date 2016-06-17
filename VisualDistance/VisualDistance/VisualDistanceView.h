@@ -3,7 +3,7 @@
 //
 
 #pragma once
-
+class CVisualDistanceDoc;
 
 class CVisualDistanceView : public CListView
 {
@@ -20,6 +20,7 @@ public:
 	void RefreshView();
 	void Start();
 	void Stop();
+	void ClearView(void);
 
 	BOOL			  m_bRefresh;
 	HANDLE			  m_hRefreshThrd;
