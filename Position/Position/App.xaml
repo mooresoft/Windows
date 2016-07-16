@@ -1,7 +1,7 @@
-﻿<Application x:Class="Manufacture.App"
+﻿<Application x:Class="Position.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:Manufacture"
+             xmlns:local="clr-namespace:Position"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
          

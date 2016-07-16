@@ -12,9 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.IO.Ports;
 
-namespace Manufacture
+namespace Position
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
