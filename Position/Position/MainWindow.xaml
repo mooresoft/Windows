@@ -5,9 +5,50 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Position"
         mc:Ignorable="d"
-        xmlns:m="clr-namespace:Microsoft.Maps.MapControl.WPF;assembly=Microsoft.Maps.MapControl.WPF"
-        Title="MainWindow" Height="768" Width="1024"  WindowStartupLocation="CenterScreen">
+        Title="MainWindow" Height="768" Width="1024"  WindowStartupLocation="CenterScreen" PreviewKeyDown="Window_PreviewKeyDown" Loaded="Window_Loaded">
+    <Window.Background >
+        <ImageBrush ImageSource="image\background.jpg"/>
+    </Window.Background>
     <Grid>
-        <m:Map CredentialsProvider="INSERT_YOUR_BING_MAPS_KEY" Mode="AerialWithLabels" Center="32.056029,118.907007" ZoomLevel="13"/>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="25"></RowDefinition>
+                <RowDefinition MinHeight="320"></RowDefinition>
+                <RowDefinition Height="20"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Top" Visibility="Visible" x:Name="Postset" Background="#FFFFFFFF">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="30" ></ColumnDefinition>
+                    <ColumnDefinition Width="90" ></ColumnDefinition>
+                    <ColumnDefinition Width="70" ></ColumnDefinition>
+                    <ColumnDefinition Width="90" ></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Row="0" Grid.Column="0">
+                    <TextBlock Name="Porttb" Text="Port : " HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="0" Grid.Column="0"></TextBlock>
+                </Grid>
+                <Grid Grid.Row="0" Grid.Column="1">
+                    <ComboBox Name="Portcobox" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,0,0"/>
+                </Grid>
+                <Grid Grid.Row="0" Grid.Column="2">
+                    <TextBlock Name="boundrate" Text="BoundRate : " HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="0" Grid.Column="2"></TextBlock>
+                </Grid>
+                <Grid Grid.Row="0" Grid.Column="3">
+                    <ComboBox Name="boundcobox" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,0,0">
+                        <ComboBoxItem IsSelected="True">115200</ComboBoxItem>
+                        <ComboBoxItem>230400</ComboBoxItem>
+                        <ComboBoxItem>9600</ComboBoxItem>
+                    </ComboBox>
+                </Grid>               
+                
+            </Grid>
+            <DockPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Center">
+                
+
+            </DockPanel>
+        </Grid>
     </Grid>
+    
 </Window>
