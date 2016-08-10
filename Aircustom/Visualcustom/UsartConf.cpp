@@ -245,10 +245,10 @@ unsigned char CUsartConf::UpgradeDevice(unsigned char* msg, unsigned char seq, u
 	pBody->appdata.apptype = msgtype;
 
 	dst_len = ((sendlen + 0x03) & 0xFFFFFFFC);
-	pBody->appdata.applen  = dst_len;
+	pBody->appdata.applen  = sendlen;
 	memset(pBody->appdata.app_data, 0, WRITE_SIZE);
 	memcpy(pBody->appdata.app_data, pbin, sendlen);
-	pBody->appdata.chksum = CheckSum(pbin, dst_len);
+	pBody->appdata.chksum = CheckSum(pbin, sendlen);
 	len += sizeof(USART_UPGRADE);
 
 	pEnd = (USART_END*)(msg + len);
