@@ -1,125 +1,91 @@
-================================================================================
-    MICROSOFT FOUNDATION CLASS LIBRARY : Topology Project Overview
+﻿================================================================================
+    MICROSOFT 基础类库 : TopologyX 项目概述
 ===============================================================================
 
-The application wizard has created this Topology application for
-you.  This application not only demonstrates the basics of using the Microsoft
-Foundation Classes but is also a starting point for writing your application.
+应用程序向导已为您创建了此 TopologyX 应用程序。此应用程序不仅演示 Microsoft 基础类的基本使用方法，还可作为您编写应用程序的起点。
 
-This file contains a summary of what you will find in each of the files that
-make up your Topology application.
+本文件概要介绍组成 TopologyX 应用程序的每个文件的内容。
 
-Topology.vcxproj
-    This is the main project file for VC++ projects generated using an application wizard.
-    It contains information about the version of Visual C++ that generated the file, and
-    information about the platforms, configurations, and project features selected with the
-    application wizard.
+TopologyX.vcxproj
+    这是使用应用程序向导生成的 VC++ 项目的主项目文件，其中包含生成该文件的 Visual C++ 的版本信息，以及有关使用应用程序向导选择的平台、配置和项目功能的信息。
 
-Topology.vcxproj.filters
-    This is the filters file for VC++ projects generated using an Application Wizard. 
-    It contains information about the association between the files in your project 
-    and the filters. This association is used in the IDE to show grouping of files with
-    similar extensions under a specific node (for e.g. ".cpp" files are associated with the
-    "Source Files" filter).
+TopologyX.vcxproj.filters
+    这是使用“应用程序向导”生成的 VC++ 项目筛选器文件。它包含有关项目文件与筛选器之间的关联信息。在 IDE 中，通过这种关联，在特定节点下以分组形式显示具有相似扩展名的文件。例如，“.cpp”文件与“源文件”筛选器关联。
 
-Topology.h
-    This is the main header file for the application.  It includes other
-    project specific headers (including Resource.h) and declares the
-    CTopologyApp application class.
+TopologyX.h
+    这是应用程序的主头文件。
+    其中包括其他项目特定的标头（包括 Resource.h），并声明 CTopologyXApp 应用程序类。
 
-Topology.cpp
-    This is the main application source file that contains the application
-    class CTopologyApp.
+TopologyX.cpp
+    这是包含应用程序类 CTopologyXApp 的主应用程序源文件。
 
-Topology.rc
-    This is a listing of all of the Microsoft Windows resources that the
-    program uses.  It includes the icons, bitmaps, and cursors that are stored
-    in the RES subdirectory.  This file can be directly edited in Microsoft
-    Visual C++. Your project resources are in 1033.
+TopologyX.rc
+    这是程序使用的所有 Microsoft Windows 资源的列表。它包括 RES 子目录中存储的图标、位图和光标。此文件可以直接在 Microsoft Visual C++ 中进行编辑。项目资源包含在 2052 中。
 
-res\Topology.ico
-    This is an icon file, which is used as the application's icon.  This
-    icon is included by the main resource file Topology.rc.
+res\TopologyX.ico
+    这是用作应用程序图标的图标文件。此图标包括在主资源文件 TopologyX.rc 中。
 
-res\Topology.rc2
-    This file contains resources that are not edited by Microsoft
-    Visual C++. You should place all resources not editable by
-    the resource editor in this file.
+res\TopologyX.rc2
+    此文件包含不在 Microsoft Visual C++ 中进行编辑的资源。您应该将不可由资源编辑器编辑的所有资源放在此文件中。
 
 /////////////////////////////////////////////////////////////////////////////
 
-For the main frame window:
-    The project includes a standard MFC interface.
+对于主框架窗口：
+    该项目包含一个标准的 MFC 接口。
 
 MainFrm.h, MainFrm.cpp
-    These files contain the frame class CMainFrame, which is derived from
-    CFrameWnd and controls all SDI frame features.
+    这些文件中包含框架类 CMainFrame，该类派生自
+    CFrameWnd 并控制所有 SDI 框架功能。
 
 res\Toolbar.bmp
-    This bitmap file is used to create tiled images for the toolbar.
-    The initial toolbar and status bar are constructed in the CMainFrame
-    class. Edit this toolbar bitmap using the resource editor, and
-    update the IDR_MAINFRAME TOOLBAR array in Topology.rc to add
-    toolbar buttons.
+    此位图文件用于为工具栏创建平铺图像。
+    初始工具栏和状态栏在 CMainFrame 类中构造。使用资源编辑器编辑此工具栏位图，并更新 TopologyX.rc 中的 IDR_MAINFRAME TOOLBAR 数组以添加工具栏按钮。
 /////////////////////////////////////////////////////////////////////////////
 
-The application wizard creates one document type and one view:
+应用程序向导创建一种文档类型和一个视图：
 
-TopologyDoc.h, TopologyDoc.cpp - the document
-    These files contain your CTopologyDoc class.  Edit these files to
-    add your special document data and to implement file saving and loading
-    (via CTopologyDoc::Serialize).
+TopologyXDoc.h、TopologyXDoc.cpp - 文档
+    这些文件包含 CTopologyXDoc 类。编辑这些文件以添加特殊文档数据并实现文件保存和加载（通过 CTopologyXDoc::Serialize）。
 
-TopologyView.h, TopologyView.cpp - the view of the document
-    These files contain your CTopologyView class.
-    CTopologyView objects are used to view CTopologyDoc objects.
-
+TopologyXView.h、TopologyXView.cpp - 文档视图
+    这些文件包含 CTopologyXView 类。
+    CTopologyXView 对象用于查看 CTopologyXDoc 对象。
 
 
 
 
 /////////////////////////////////////////////////////////////////////////////
 
-Other Features:
+其他功能：
 
-ActiveX Controls
-    The application includes support to use ActiveX controls.
+ActiveX 控件
+    该应用程序包含对使用 ActiveX 控件的支持。
 
-Printing and Print Preview support
-    The application wizard has generated code to handle the print, print setup, and print preview
-    commands by calling member functions in the CView class from the MFC library.
+拆分窗口
+    应用程序向导已添加对应用程序文档的拆分窗口的支持。
+
+Windows 套接字
+    应用程序包含对通过 TCP/IP 网络建立通信的支持。
 
 /////////////////////////////////////////////////////////////////////////////
 
-Other standard files:
+其他标准文件:
 
 StdAfx.h, StdAfx.cpp
-    These files are used to build a precompiled header (PCH) file
-    named Topology.pch and a precompiled types file named StdAfx.obj.
+    这些文件用于生成名为 TopologyX.pch 的预编译头 (PCH) 文件和名为 StdAfx.obj 的预编译类型文件。
 
 Resource.h
-    This is the standard header file, which defines new resource IDs.
-    Microsoft Visual C++ reads and updates this file.
+    这是标准头文件，可用于定义新的资源 ID。Microsoft Visual C++ 将读取并更新此文件。
 
-Topology.manifest
-	Application manifest files are used by Windows XP to describe an applications
-	dependency on specific versions of Side-by-Side assemblies. The loader uses this
-	information to load the appropriate assembly from the assembly cache or private
-	from the application. The Application manifest  maybe included for redistribution
-	as an external .manifest file that is installed in the same folder as the application
-	executable or it may be included in the executable in the form of a resource.
+TopologyX.manifest
+	Windows XP 使用应用程序清单文件来描述特定版本的并行程序集的应用程序依赖项。加载程序使用这些信息来从程序集缓存中加载相应的程序集，并保护其不被应用程序访问。应用程序清单可能会包含在内，以作为与应用程序可执行文件安装在同一文件夹中的外部 .manifest 文件进行重新分发，它还可能以资源的形式包含在可执行文件中。
 /////////////////////////////////////////////////////////////////////////////
 
-Other notes:
+其他注释:
 
-The application wizard uses "TODO:" to indicate parts of the source code you
-should add to or customize.
+应用程序向导使用“TODO:”来指示应添加或自定义的源代码部分。
 
-If your application uses MFC in a shared DLL, you will need
-to redistribute the MFC DLLs. If your application is in a language
-other than the operating system's locale, you will also have to
-redistribute the corresponding localized resources MFC100XXX.DLL.
-For more information on both of these topics, please see the section on
-redistributing Visual C++ applications in MSDN documentation.
+如果应用程序使用共享 DLL 中的 MFC，您将需要重新分发 MFC DLL。如果应用程序所使用的语言与操作系统的区域设置不同，则还需要重新分发相应的本地化资源 mfc110XXX.DLL。
+有关上述话题的更多信息，请参见 MSDN 文档中有关重新分发 Visual C++ 应用程序的部分。
 
 /////////////////////////////////////////////////////////////////////////////

@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "Topology.h"
+#include "TopologyX.h"
 #include "DlgOpenSerial.h"
 #include "afxdialogex.h"
 #include <Dbt.h>

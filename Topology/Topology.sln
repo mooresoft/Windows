@@ -1,7 +1,7 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Topology", "Topology\Topology.vcxproj", "{4330EF12-73A3-4F90-953E-8FE8AD4E3A6C}"
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Topology", "Topology\TopologyX.vcxproj", "{FB7FEC21-D908-4FB4-A085-7877437CA6F7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -9,10 +9,10 @@ Global
 		Release|Win32 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{4330EF12-73A3-4F90-953E-8FE8AD4E3A6C}.Debug|Win32.ActiveCfg = Debug|Win32
-		{4330EF12-73A3-4F90-953E-8FE8AD4E3A6C}.Debug|Win32.Build.0 = Debug|Win32
-		{4330EF12-73A3-4F90-953E-8FE8AD4E3A6C}.Release|Win32.ActiveCfg = Release|Win32
-		{4330EF12-73A3-4F90-953E-8FE8AD4E3A6C}.Release|Win32.Build.0 = Release|Win32
+		{FB7FEC21-D908-4FB4-A085-7877437CA6F7}.Debug|Win32.ActiveCfg = Debug|Win32
+		{FB7FEC21-D908-4FB4-A085-7877437CA6F7}.Debug|Win32.Build.0 = Debug|Win32
+		{FB7FEC21-D908-4FB4-A085-7877437CA6F7}.Release|Win32.ActiveCfg = Release|Win32
+		{FB7FEC21-D908-4FB4-A085-7877437CA6F7}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

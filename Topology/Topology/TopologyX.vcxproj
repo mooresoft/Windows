@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -11,23 +11,26 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{4330EF12-73A3-4F90-953E-8FE8AD4E3A6C}</ProjectGuid>
-    <RootNamespace>Topology</RootNamespace>
+    <ProjectGuid>{FB7FEC21-D908-4FB4-A085-7877437CA6F7}</ProjectGuid>
+    <RootNamespace>TopologyX</RootNamespace>
     <Keyword>MFCProj</Keyword>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <UseOfMfc>Dynamic</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
-    <UseOfMfc>Dynamic</UseOfMfc>
+    <UseOfMfc>Static</UseOfMfc>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -51,6 +54,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -62,7 +66,7 @@
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </Midl>
     <ResourceCompile>
-      <Culture>0x0409</Culture>
+      <Culture>0x0804</Culture>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
@@ -71,10 +75,11 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Disabled</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -88,54 +93,70 @@
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </Midl>
     <ResourceCompile>
-      <Culture>0x0409</Culture>
+      <Culture>0x0804</Culture>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <None Include="ReadMe.txt" />
-    <None Include="res\Toolbar.bmp" />
-    <None Include="res\Toolbar256.bmp" />
-    <None Include="res\Topology.ico" />
-    <None Include="res\Topology.rc2" />
-    <None Include="res\TopologyDoc.ico" />
-    <None Include="UserImages.bmp" />
+    <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DevList.h" />
     <ClInclude Include="DlgOpenSerial.h" />
+    <ClInclude Include="HPVec.h" />
     <ClInclude Include="MainFrm.h" />
+    <ClInclude Include="Pkg.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SerialPort.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="Topology.h" />
-    <ClInclude Include="TopologyDoc.h" />
-    <ClInclude Include="TopologyView.h" />
+    <ClInclude Include="TopoDev.h" />
+    <ClInclude Include="TopologyX.h" />
+    <ClInclude Include="TopologyXDoc.h" />
+    <ClInclude Include="TopologyXView.h" />
+    <ClInclude Include="TopoSouth.h" />
+    <ClInclude Include="WxDC.h" />
+    <ClInclude Include="WxMapCtrl.h" />
+    <ClInclude Include="WxMapDefs.h" />
+    <ClInclude Include="WxRgn.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DevList.cpp" />
     <ClCompile Include="DlgOpenSerial.cpp" />
+    <ClCompile Include="HPVec.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="SerialPort.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Topology.cpp" />
-    <ClCompile Include="TopologyDoc.cpp" />
-    <ClCompile Include="TopologyView.cpp" />
+    <ClCompile Include="TopoDev.cpp" />
+    <ClCompile Include="TopologyX.cpp" />
+    <ClCompile Include="TopologyXDoc.cpp" />
+    <ClCompile Include="TopologyXView.cpp" />
+    <ClCompile Include="TopoSouth.cpp" />
+    <ClCompile Include="WxDC.cpp" />
+    <ClCompile Include="WxMapCtrl.cpp" />
+    <ClCompile Include="WxRgn.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Topology.rc" />
+    <ResourceCompile Include="TopologyX.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\TopologyX.rc2" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\Toolbar.bmp" />
+    <Image Include="res\TopologyX.ico" />
+    <Image Include="res\TopologyXDoc.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties RESOURCE_FILE="Topology.rc" />
+      <UserProperties RESOURCE_FILE="TopologyX.rc" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "Topology.h"
+#include "TopologyX.h"
 #include "DevList.h"
 
 
@@ -38,6 +38,12 @@ void CDevList::Dump(CDumpContext& dc) const
 	CListView::Dump(dc);
 }
 #endif
+
+CTopologyXDoc* CDevList::GetDocument() const // 非调试版本是内联的
+{
+	ASSERT(m_pDocument->IsKindOf(RUNTIME_CLASS(CTopologyXDoc)));
+	return (CTopologyXDoc*)m_pDocument;
+}
 #endif //_DEBUG
 
 
@@ -73,6 +79,7 @@ int CDevList::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_list.InsertColumn(3, _T("9002"), LVCFMT_CENTER, 80);
 	m_list.InsertColumn(4, _T("9003"), LVCFMT_CENTER, 80);
 	m_list.InsertColumn(5, _T("9004"), LVCFMT_CENTER, 80);
+	m_list.InsertColumn(6, _T("X, Y"), LVCFMT_LEFT, 100);
 
 	for (int i = 0; i < 5; i++)
 	{
@@ -81,6 +88,57 @@ int CDevList::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		m_list.SetItemText(i, 0, strContent);
 	}
 
+
 	//m_list.DeleteColumn(0);	
 	return 0;
+}
+
+
+void CDevList::OnUpdate(CView* /*pSender*/, LPARAM /*lHint*/, CObject* /*pHint*/)
+{
+//	return;
+	// TODO: 在此添加专用代码和/或调用基类
+	CListCtrl &list=GetListCtrl();
+	list.SetRedraw(FALSE);
+
+	list.DeleteAllItems();
+
+	INT i,j,nCol = list.GetHeaderCtrl()->GetItemCount();
+	for(i=nCol-1; i>=0; i--)
+		list.DeleteColumn(i);
+
+	CString str;
+	std::vector<UINT> *pids = GetDocument()->GetDevIDs();
+	double *rangs = GetDocument()->GetRMatrix();
+	HPVEC2D *ppos = GetDocument()->GetPosArr();
+	wchar_t wbuf[32];
+	nCol = pids->size();
+	list.InsertColumn(0, _T(""), LVCFMT_CENTER, 80);
+	for(i=0; i<nCol; i++)
+	{
+		str.Format(L"%X", pids->at(i));
+		list.InsertColumn(i+1, str, LVCFMT_CENTER, 80);
+	}
+	list.InsertColumn(6, _T("X, Y"), LVCFMT_LEFT, 100);
+
+	for(i=0; i<nCol; i++)
+	{
+		str.Format(L"%X", pids->at(i));
+		list.InsertItem(i, str);
+	}
+	for(i=0; i<nCol; i++)
+	{
+		for(j=0; j<nCol; j++)
+		{
+			str.Format(L"%d", (INT)(MAT_ITEM(rangs,i,j)*100));
+			list.SetItemText(i, j+1, str);
+		}
+		str.Format(L"%d, %d", (INT)(ppos[i].x*100),(INT)(ppos[i].y*100));
+		list.SetItemText(i, j+1, str);
+	}
+
+	list.SetRedraw(TRUE);
+	list.Invalidate();
+	list.UpdateWindow();
+
 }

@@ -29,6 +29,7 @@ public:
 	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
 	afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
 	afx_msg void OnTimer(UINT nIDEvent);
+	afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
 protected:
 	DECLARE_MESSAGE_MAP()
 
@@ -64,26 +65,33 @@ public:
 	void SetCenterPos(double xPos, double yPos); // 厘米为单位的位置坐标
 	void SetCenterPixel(POINT &pnt);
 	void OffsetView(int deltaX, int deltaY);
-
+	void DrawText(CDC *pdc, CString strText, int x, int y, DWORD dwType);
 	void DrawCtrl(CDC *pDC, UINT drawMode=MDRAW_DEFAULT);
+public:
+	INT GetRuler();
+	INT GetGrid();
+	INT GetScale();
 private:
 	void MoveFloatLayer(CRect &rectLayer, CPoint point);
 	int CheckPointPos(CPoint point);
 	void DrawRectRgn(CDC *pDC, int x, int y, int w, int h, COLORREF crPen);
 	void RecalculateRects(int cx, int cy);
 	void DrawThumbnail(CDC *pDC,  CRect &rectv, CRect &rect);
-	void DrawRuler(CDC *pDC,  CRect &rectShow, CRect &rectView, double dZoom);
+//	void DrawRuler(CDC *pDC,  CRect &rectShow, CRect &rectView, double dZoom);
+	void DrawRuler(CDC *pDC);
 	void DrawPathLine(CDC *pDC, int x, int y, int x0, int y0, int r, COLORREF color, unsigned char path);
-	void DrawText(CDC *pdc, CString strText, int x, int y, DWORD dwType);
 
 
-	void DrawGridLine(CDC *pDC,  CRect &rectShow, CRect &rectView, double dZoom);
+//	void DrawGridLine(CDC *pDC,  CRect &rectShow, CRect &rectView, double dZoom);
+	void DrawGridLine(CDC *pDC);
 	void DrawTrack(CDC *pDC, int x0, int y0, int x, int y, COLORREF color);
 	void DrawPoint(CDC *pDC, int x, int y, int r, int s, COLORREF c);
 
 	double CalcLogarithms(double inVal, double throshVal);
 
 	void DrawLogCoords(CDC* pDC, double StartFreq, double StopFreq);
+
+	void DrawVelocity(CDC *pDC, POINT &pt, int w, int h, int velo);
 
 private:
 	int m_nPix;
@@ -146,6 +154,7 @@ private:
 
 	//比例尺，基准为1:100，1:50为2，1:200为0.5
 	float m_fZoom;
+	INT m_nScaleIndex; // 0~19
 
 	//每厘米的像素数，比例尺1：100时，则为每米的像素数
 	double m_coefx;
@@ -174,7 +183,9 @@ public:
 	void Pos2Pix(double xPos, double yPos, double &x, double &y);
 	void Pix2View(double x, double y, HPVEC2D &pt);
 	void Pos2View(double xPos, double yPos, HPVEC2D &pt);
+	__inline void Pos2ViewIn(double xPos, double yPos, HPVEC2D &pt);
 	void View2Pos(HPVEC2D &pt, double &xPos, double &yPos);
+	__inline void View2PosIn(HPVEC2D &pt, double &xPos, double &yPos);
 	void ViewLen2PosLen( double &coefx, double &coefy);
 	void GetCoef( double &coefx, double &coefy);
 	CRect GetPicRect(){return m_rectPic;};
@@ -185,7 +196,7 @@ public:
 	void CreateRgnFromWxRgn(CRgn &rgn, CWxRgn *wxrgn, XFORM *xaf);
 public:
 	void DrawIcon(CDC *pDC, CDC *pSrc, POINT &ptCenter, int w, int h, CString strName=_T(""), CString strVal=_T(""));
-	void DrawIconRotate(CDC *pDC, CDC *pSrc, POINT &ptCenter, int w, int h, double dangle, CString strName=_T(""), CString strVal=_T(""));
+	void DrawIconRotate(CDC *pDC, CDC *pSrc, POINT &ptCenter, int w, int h, double dangle, CString strName=_T(""), CString strVal=_T(""), INT velo=-1);
 	void DrawPoint(CDC *pDC, POINT &pt, int r);
 	void DrawArrow(CDC *pDC, POINT &pt, double azimuth, int r);
 	void DrawRect2View(CDC *pDC, CHPRect &rectPix);
@@ -200,6 +211,12 @@ private:
 	UINT m_dwPrs;
 public:
 	void SetPrs(DWORD dw){m_dwPrs = dw;};
+protected:
+	XFORM m_xform;
+protected:
+	__inline void RecalXform();
+public:
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 };
 
 

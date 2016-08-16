@@ -1,33 +1,42 @@
 
-// MainFrm.h : interface of the CMainFrame class
+// MainFrm.h : CMainFrame 类的接口
 //
 
 #pragma once
 #include "serialport.h"
 #include "DlgOpenSerial.h"
+#include "HPVec.h"
 
-class CMainFrame : public CFrameWndEx
+class CMainFrame : public CFrameWnd
 {
 	
-protected: // create from serialization only
+protected: // 仅从序列化创建
 	CMainFrame();
 	DECLARE_DYNCREATE(CMainFrame)
 
 	CSerialPort m_serial;
-// Attributes
+	// Attributes
 public:
 	CDlgOpenSerial m_dlgOpenSerial;
-    HANDLE			  m_hReadThrd;
-	BOOL			  m_bRead;
-// Operations
+	HANDLE			  m_hReadThrd;
+	volatile BOOL		  m_bRead;
+	std::string            m_sCmd;
+	CRITICAL_SECTION  m_csRecvSerail;
+	std::list<std::string> m_qsCmd;
+// 特性
+protected:
+	CSplitterWnd m_wndSplitter;
 public:
 
-// Overrides
+// 操作
 public:
+
+// 重写
+public:
+	virtual BOOL OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext);
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
-	virtual BOOL LoadFrame(UINT nIDResource, DWORD dwDefaultStyle = WS_OVERLAPPEDWINDOW | FWS_ADDTOTITLE, CWnd* pParentWnd = NULL, CCreateContext* pContext = NULL);
 
-// Implementation
+// 实现
 public:
 	virtual ~CMainFrame();
 #ifdef _DEBUG
@@ -35,25 +44,30 @@ public:
 	virtual void Dump(CDumpContext& dc) const;
 #endif
 
-protected:  // control bar embedded members
-	CMFCMenuBar       m_wndMenuBar;
-	CMFCToolBar       m_wndToolBar;
-	CMFCStatusBar     m_wndStatusBar;
-	CMFCToolBarImages m_UserImages;
+protected:  // 控件条嵌入成员
+	CToolBar          m_wndToolBar;
+	CStatusBar        m_wndStatusBar;
 
-	CSplitterWnd      m_wndSplitter;
-// Generated message map functions
+// 生成的消息映射函数
 protected:
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
-	afx_msg void OnViewCustomize();
-	afx_msg LRESULT OnToolbarCreateNew(WPARAM wp, LPARAM lp);
-	afx_msg LRESULT OnRecvSerial(WPARAM wParam, LPARAM lParam);
 	DECLARE_MESSAGE_MAP()
-
-	virtual BOOL OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext);
+	afx_msg LRESULT OnRecvSerial(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnMyUpdate(WPARAM wParam, LPARAM lParam);
+	afx_msg void OnClose();
 public:
 	afx_msg void OnFileOpen();
+	afx_msg void OnEmulate();
 	afx_msg void OnSerialClose();
+public:
+	void     south_parse_msg();
+	void     calc_topology(unsigned char* pmsg);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
+protected:
+	UINT16 m_emu_aids[MAX_DIM];
+	CHPVec2D m_emu_pos[MAX_DIM];
+	UINT16 m_emu_r[MAX_DIM][MAX_DIM];
+
 };
 
 

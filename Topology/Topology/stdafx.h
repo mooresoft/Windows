@@ -1,49 +1,57 @@
 
-// stdafx.h : include file for standard system include files,
-// or project specific include files that are used frequently,
-// but are changed infrequently
+// stdafx.h : 标准系统包含文件的包含文件，
+// 或是经常使用但不常更改的
+// 特定于项目的包含文件
 
 #pragma once
 
-#ifndef _SECURE_ATL
-#define _SECURE_ATL 1
-#endif
-
 #ifndef VC_EXTRALEAN
-#define VC_EXTRALEAN            // Exclude rarely-used stuff from Windows headers
+#define VC_EXTRALEAN            // 从 Windows 头中排除极少使用的资料
 #endif
 
 #include "targetver.h"
 
-#define _ATL_CSTRING_EXPLICIT_CONSTRUCTORS      // some CString constructors will be explicit
+#define _ATL_CSTRING_EXPLICIT_CONSTRUCTORS      // 某些 CString 构造函数将是显式的
 
-// turns off MFC's hiding of some common and often safely ignored warning messages
+// 关闭 MFC 对某些常见但经常可放心忽略的警告消息的隐藏
 #define _AFX_ALL_WARNINGS
 
-#include <afxwin.h>         // MFC core and standard components
-#include <afxext.h>         // MFC extensions
+#include <afxwin.h>         // MFC 核心组件和标准组件
+#include <afxext.h>         // MFC 扩展
 
 
-#include <afxdisp.h>        // MFC Automation classes
+#include <afxdisp.h>        // MFC 自动化类
 
 
 
 #ifndef _AFX_NO_OLE_SUPPORT
-#include <afxdtctl.h>           // MFC support for Internet Explorer 4 Common Controls
+#include <afxdtctl.h>           // MFC 对 Internet Explorer 4 公共控件的支持
 #endif
 #ifndef _AFX_NO_AFXCMN_SUPPORT
-#include <afxcmn.h>             // MFC support for Windows Common Controls
+#include <afxcmn.h>             // MFC 对 Windows 公共控件的支持
 #endif // _AFX_NO_AFXCMN_SUPPORT
 
-#include <afxcontrolbars.h>     // MFC support for ribbons and control bars
+#include <afxcontrolbars.h>     // 功能区和控件条的 MFC 支持
 #include <afxcview.h>
 
 
+#include <afxsock.h>            // MFC 套接字扩展
 
+#include <string>
+#include <vector>
+#include <map>
+#include <list>
+using namespace std;
 
+#include <math.h>
 
+#define CONST_PI (3.1415926)
 
+//预定义项，最大维数为16，即最大可以有16个基站（只是为了省事，不用new和delete）
+#define MAX_DIM (16)
 
+//矩阵元素的读取，所有矩阵都以一维线性数组存储，长度为MAX_DIM*MAX_DIM （1）
+#define MAT_ITEM(p,row,col) p[row*MAX_DIM+col]
 
 
 #ifdef _UNICODE

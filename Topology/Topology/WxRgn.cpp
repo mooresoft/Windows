@@ -62,7 +62,7 @@ BOOL CWxEllipticRgn::Init(std::wstring str)
 	double x1, y1, x2, y2;
 	wchar_t t;
 
-	if(4==swscanf(str.c_str(), L"%lf,%lf,%lf,%lf%c", &x1, &y1, &x2, &y2, &t))
+	if(4==swscanf_s(str.c_str(), L"%lf,%lf,%lf,%lf%c", &x1, &y1, &x2, &y2, &t))
 	{
 		return Init(x1,y1,x2,y2);
 	}
@@ -97,7 +97,7 @@ BOOL CWxRectRgn::Init(std::wstring str)
 	double x1, y1, x2, y2;
 	wchar_t t;
 
-	if(4==swscanf(str.c_str(), L"%lf,%lf,%lf,%lf%c", &x1, &y1, &x2, &y2, &t))
+	if(4==swscanf_s(str.c_str(), L"%lf,%lf,%lf,%lf%c", &x1, &y1, &x2, &y2, &t))
 	{
 		return Init(x1,y1,x2,y2);
 	}
@@ -174,7 +174,7 @@ BOOL CWxPolygonRgn::Init(std::wstring str)
 	for(std::vector<std::wstring>::iterator itr=vecs.begin(); itr!=vecs.end(); itr++)
 	{
 		CHPVec2D hp;
-		if(2==swscanf(itr->c_str(), L"%lf,%lf", &hp.x,&hp.y))
+		if(2==swscanf_s(itr->c_str(), L"%lf,%lf", &hp.x,&hp.y))
 		{
 			m_polys->push_back(hp);
 		}

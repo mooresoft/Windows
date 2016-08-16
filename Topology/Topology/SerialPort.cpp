@@ -546,7 +546,7 @@ void CSerialPort::ReceiveChar(CSerialPort* port, COMSTAT comstat)
 							   1,					// Read one byte
 							   &BytesRead,			// Stores number of bytes read
 							   &port->m_ov);		// pointer to the m_ov structure
-			if ('\0' != RXBuff)
+		//	if ('\0' != RXBuff)
 			{
 				::PostMessage((port->m_pOwner)->m_hWnd, WM_COMM_RXCHAR, (WPARAM)RXBuff, (LPARAM)port->m_nPortNr);
 			}

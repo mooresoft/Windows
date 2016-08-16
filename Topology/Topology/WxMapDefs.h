@@ -19,6 +19,7 @@
 #define MPOINT_POS		7
 #define MOBJECT_ADD		8
 #define MOBJECT_RMENU	10
+#define MNOTICE_VCHANGE	11
 
 
 #define TIMER_PICVIEW_MOVE 1001
@@ -31,6 +32,14 @@
 
 #define MAPCTRL_IMGBDR_WIDTH (100)
 
+
+enum{
+	MVS_REMAIN=1,
+	MVS_SCALE,
+	MVS_RULER,
+	MVS_GRID,
+	MVS_CTYPE,
+};
 
 typedef enum PIC_RESIZE_STRATEGY{
 	prsMM = 0x00,

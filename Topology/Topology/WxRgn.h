@@ -2,6 +2,9 @@
 
 #include "HPVec.h"
 
+#define ReleaseObjSafe(obj) {if(obj) delete obj; obj=NULL;}
+#define ReleaseArraySafe(obj) {if(obj) delete []obj; obj=NULL;}
+
 
 class CWxRgn
 {

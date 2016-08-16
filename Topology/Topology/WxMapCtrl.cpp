@@ -6,6 +6,7 @@
 #include <math.h>
 #include "WxDC.h"
 
+static int g_validMapScale[]={2,5,10,20,50,100,150,200,250,300,400,500,600,800,1000,1500,2000,3000,5000,10000};
 
 // CWxMapCtrl
 
@@ -45,11 +46,6 @@ CWxMapCtrl::CWxMapCtrl()
 	m_PntOffset = CPoint(0,0);
 	m_PntOffsetAdd = CPoint(0,0);
 	m_CursorPos = CPoint(0,0);
-	m_fZoom = 1.0f;
-	m_fPicZoomX = 1.0f;
-	m_fPicZoomY = 1.0f;
-	m_pntPicOff.x = 0;
-	m_pntPicOff.y = 0;
 
 //	m_nCmPerPixel=10; //每像素的厘米数 ——最大比例为1像素1厘米
 
@@ -60,10 +56,6 @@ CWxMapCtrl::CWxMapCtrl()
 
 	m_coefx = xDpi / 2.54f; 
 	m_coefy = yDpi / 2.54f;
-
-	m_nGridRadiu = 0;
-	m_nShowRuler = 0;
-//	m_nScale = 100;
 
 	m_hCursorArrow = ::LoadCursor(NULL, IDC_ARROW);
 	m_hCursorSizeall = ::LoadCursor(NULL, IDC_SIZEALL);
@@ -86,15 +78,33 @@ CWxMapCtrl::CWxMapCtrl()
 	lf.lfStrikeOut = NULL;
 	lf.lfCharSet = DEFAULT_CHARSET;
 	lf.lfHeight = nBody - 2;
-	_tcscpy(lf.lfFaceName, _T("Arial"));
+	_tcscpy_s(lf.lfFaceName, _T("Arial"));
 	m_font.CreateFontIndirect(&lf);
 
 	m_pMessageHandler = NULL;
 
 	m_dwPrs = prsMM;
 
-	m_nGridRadiu = 100;
+	m_fPicZoomX = 1.0f;
+	m_fPicZoomY = 1.0f;
+	m_pntPicOff.x = 0;
+	m_pntPicOff.y = 0;
+
+	m_nScaleIndex = 5; // 100
+	m_fZoom = g_validMapScale[m_nScaleIndex] / 100.00f;
+	m_nGridRadiu = g_validMapScale[m_nScaleIndex];
 	m_nShowRuler = 3;
+	RecalXform();	
+}
+
+void CWxMapCtrl::RecalXform()
+{
+	m_xform.eM11 = m_coefx*m_fZoom/100.00f;
+	m_xform.eM12 = 0;
+	m_xform.eM21 = 0;
+	m_xform.eM22 = m_coefy*m_fZoom/100.00f;
+	m_xform.eDx = m_rectPic.left - m_PntOffset.x*m_fZoom;
+	m_xform.eDy = m_rectPic.top - m_PntOffset.y*m_fZoom;
 }
 
 CWxMapCtrl::~CWxMapCtrl()
@@ -130,6 +140,7 @@ BEGIN_MESSAGE_MAP(CWxMapCtrl, CWnd)
 	ON_WM_RBUTTONDOWN()
 	ON_WM_ERASEBKGND()
 	ON_MESSAGE(WM_MOUSELEAVE, OnMouseLeave)
+	ON_WM_MOUSEWHEEL()
 END_MESSAGE_MAP()
 
 
@@ -220,6 +231,10 @@ void CWxMapCtrl::RecalculateRects(int cx, int cy)
 		}
 	}
 */
+//////////////////////////////////////////////////////////
+	m_xform.eDx = m_rectPic.left - m_PntOffset.x*m_fZoom;
+	m_xform.eDy = m_rectPic.top - m_PntOffset.y*m_fZoom;
+///////////////////////////////////////////////////////////
 	m_bRectsNeedRecalculate = FALSE;
 }
 
@@ -322,6 +337,7 @@ void CWxMapCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 	if(m_nSelect & (pvisPic|pvisUser))
 		m_hMyCursor = m_hCursorSizeall;
 
+	SetFocus(); // 不然鼠标滚轮的消息不会被响应
 };
 void CWxMapCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 {
@@ -413,7 +429,11 @@ void CWxMapCtrl::OnMouseMove(UINT nFlags, CPoint point)
 	{
 		m_PntOffset.x += (LONG)((m_CursorPos.x-point.x)/m_fZoom);
 		m_PntOffset.y += (LONG)((m_CursorPos.y-point.y)/m_fZoom);
-	
+
+		////////////////////////////////////////////////////
+		m_xform.eDx = m_rectPic.left - m_PntOffset.x*m_fZoom;
+		m_xform.eDy = m_rectPic.top - m_PntOffset.y*m_fZoom;
+		/////////////////////////////////////////////////////
 		Invalidate();
 	}
 	else if(m_nSelect == pvisThmb)
@@ -570,6 +590,8 @@ void CWxMapCtrl::Zoom(BOOL bIncrease)
 	m_fZoom += ((bIncrease)? (0.1f):(-0.1f));
 	m_fZoom = (m_fZoom > 10.0f) ? 10.0f : m_fZoom;
 	m_fZoom = (m_fZoom < 0.1f) ? 0.1f : m_fZoom;
+
+	RecalXform();
 	Invalidate();
 }
 
@@ -610,12 +632,20 @@ void CWxMapCtrl::SetCenterPixel(POINT &pnt)
 	pnt0.y = m_rectPic.Height()/2 / m_fZoom;
 	m_PntOffset.x = pnt.x - pnt0.x;
 	m_PntOffset.y = pnt.y - pnt0.y;
+////////////////////////////////////////////////////////////
+	m_xform.eDx = m_rectPic.left - m_PntOffset.x*m_fZoom;
+	m_xform.eDy = m_rectPic.top - m_PntOffset.y*m_fZoom;
+////////////////////////////////////////////////////////////
 }
 
 void CWxMapCtrl::OffsetView(int deltaX, int deltaY)
 {
-	m_PntOffset.x += deltaX;
-	m_PntOffset.y += deltaY;
+	m_PntOffset.x += (deltaX/m_fZoom);
+	m_PntOffset.y += (deltaY/m_fZoom);
+/////////////////////////////////////////////////////////////
+	m_xform.eDx = m_rectPic.left - m_PntOffset.x*m_fZoom;
+	m_xform.eDy = m_rectPic.top - m_PntOffset.y*m_fZoom;
+/////////////////////////////////////////////////////////////
 }
 
 void CWxMapCtrl::SetCenterPos(double xPos, double yPos)
@@ -629,48 +659,29 @@ void CWxMapCtrl::SetCenterPos(double xPos, double yPos)
 
 void CWxMapCtrl::ShowScale(INT nScale)
 {
-	float fz = (float)(100.00f / (double)nScale);
+	for(int i=0; i<sizeof(g_validMapScale)/sizeof(int); i++)
+	{
+		if(nScale == g_validMapScale[i])
+		{
+			m_nScaleIndex = i;
+			break;
+		}
+		else if(i>0 && nScale>g_validMapScale[i-1] && nScale<g_validMapScale[i])
+		{
+			m_nScaleIndex = i-1;
+			break;
+		}
+	}
+	float fz = (float)(100.00f / (double)g_validMapScale[m_nScaleIndex]);
 	if(fz != m_fZoom)
 	{
+		m_PntOffset.x = (long)((double)m_PntOffset.x * (m_fZoom/fz));
+		m_PntOffset.y = (long)((double)m_PntOffset.y * (m_fZoom/fz));
+
 		m_fZoom = fz;
+		RecalXform();
 		Invalidate();
 	}
-
-}
-
-void CWxMapCtrl::_Pix2Pos(double xPix, double yPix, double &xPos, double &yPos)
-{
-	double dx,dy;
-	dx = xPix * 100 / m_coefx;
-	dy = yPix * 100 / m_coefy;
-
-	xPos = CalcLogarithms(dx, m_dLogThresholdX);
-	yPos = CalcLogarithms(dy, m_dLogThresholdY);
-
-}
-
-void CWxMapCtrl::_Pos2Pix(double xPos, double yPos, double &dx, double &dy)
-{
-	//dx = xPos * m_coefx / 100;
-	//dy = yPos * m_coefy / 100;
-	if(m_dLogThresholdX >= 0.001f && xPos > m_dLogThresholdX)
-	{
-		dx = (int) (m_dLogThresholdX*m_coefx/100.00f * (1+log10(xPos/m_dLogThresholdX)));
-	}
-	else
-	{
-		dx = (int)(xPos * m_coefx / 100.00f);
-	}
-
-	if(m_dLogThresholdY >= 0.001f && yPos > m_dLogThresholdY)
-	{
-		dy = (int) (m_dLogThresholdY*m_coefy/100.00f * (1+log10(yPos/m_dLogThresholdY)));
-	}
-	else
-	{
-		dy = (int)(yPos * m_coefy / 100.00f);
-	}
-
 
 }
 
@@ -805,6 +816,43 @@ void CWxMapCtrl::DrawPosRound(CDC *pDC, CHPVec3D pos, double r, BOOL isVp, CHPVe
 	pDC->SelectObject(pOldBrush);
 };
 
+
+void CWxMapCtrl::_Pix2Pos(double xPix, double yPix, double &xPos, double &yPos)
+{
+	double dx,dy;
+	dx = xPix * 100 / m_coefx;
+	dy = yPix * 100 / m_coefy;
+
+	xPos = CalcLogarithms(dx, m_dLogThresholdX);
+	yPos = CalcLogarithms(dy, m_dLogThresholdY);
+
+}
+
+void CWxMapCtrl::_Pos2Pix(double xPos, double yPos, double &dx, double &dy)
+{
+	//dx = xPos * m_coefx / 100;
+	//dy = yPos * m_coefy / 100;
+	if(m_dLogThresholdX >= 0.001f && xPos > m_dLogThresholdX)
+	{
+		dx = (int) (m_dLogThresholdX*m_coefx/100.00f * (1+log10(xPos/m_dLogThresholdX)));
+	}
+	else
+	{
+		dx = (int)(xPos * m_coefx / 100.00f);
+	}
+
+	if(m_dLogThresholdY >= 0.001f && yPos > m_dLogThresholdY)
+	{
+		dy = (int) (m_dLogThresholdY*m_coefy/100.00f * (1+log10(yPos/m_dLogThresholdY)));
+	}
+	else
+	{
+		dy = (int)(yPos * m_coefy / 100.00f);
+	}
+
+
+}
+
 void CWxMapCtrl::Pos2Pix(double xPos, double yPos, double &x, double &y)
 {
 	_Pos2Pix(xPos,yPos,x,y);
@@ -821,7 +869,13 @@ void CWxMapCtrl::Pix2View(double x, double y, HPVEC2D &pt)
 {
 	pt.x = ((x - m_PntOffset.x)*m_fZoom) + m_rectPic.left;
 	pt.y = ((y - m_PntOffset.y)*m_fZoom) + m_rectPic.top;
+}
 
+//米为单位
+void CWxMapCtrl::Pos2ViewIn(double xPos, double yPos, HPVEC2D &pt)
+{
+	pt.x = xPos * m_xform.eM11 + yPos * m_xform.eM21 + m_xform.eDx;
+	pt.y = yPos * m_xform.eM12 + yPos * m_xform.eM22 + m_xform.eDy;
 }
 
 void CWxMapCtrl::Pos2View(double xPos, double yPos, HPVEC2D &pt)
@@ -871,16 +925,6 @@ void CWxMapCtrl::GetCoef( double &coefx, double &coefy)
 
 void CWxMapCtrl::DrawPosRgn(CDC *pDC, CRgn *pRgn, BOOL bShowBorder, BOOL bFillColor, COLORREF cr)
 {
-	float fScaleX = (m_fZoom * m_coefx)/100.00f, fScaleY = (m_fZoom * m_coefy)/100.00f;// 缩放倍数
-	float fDx = m_rectPic.left - m_PntOffset.x*m_fZoom, fDy=m_rectPic.top - m_PntOffset.y*m_fZoom; //平移坐标
-	XFORM xAffine = { fScaleX,0,0,fScaleY,fDx,fDy };
-//	xAffine.eM11 *= fScaleX;
-//	xAffine.eM12 *= fScaleX;
-//	xAffine.eM21 *= fScaleY;
-//	xAffine.eM22 *= fScaleY;
-//	xAffine.eDx  *= fScaleX;
-//	xAffine.eDy  *= fScaleY;
-
 	int nCount = pRgn->GetRegionData(NULL, 0);
 	if(nCount == 0)
 		return;
@@ -888,7 +932,7 @@ void CWxMapCtrl::DrawPosRgn(CDC *pDC, CRgn *pRgn, BOOL bShowBorder, BOOL bFillCo
 	pRgn->GetRegionData(pRgnData, nCount);
 
 	CRgn rgnScale;
-	rgnScale.CreateFromData(&xAffine, nCount, pRgnData );
+	rgnScale.CreateFromData(&m_xform, nCount, pRgnData );
 	CBrush brhScale(cr);
 	if(bFillColor)
 	{
@@ -980,12 +1024,8 @@ void CWxMapCtrl::CreateRgnFromWxRgn(CRgn &rgn, CWxRgn *wxrgn, XFORM *xaf)
 }
 void CWxMapCtrl::DrawPosRgn(CDC *pDC, CWxRgn *pRgn, BOOL bShowBorder, BOOL bFillColor, COLORREF cr)
 {
-	float fScaleX = (m_fZoom * m_coefx)/100.00f, fScaleY = (m_fZoom * m_coefy)/100.00f;// 缩放倍数
-	float fDx = m_rectPic.left - m_PntOffset.x*m_fZoom, fDy=m_rectPic.top - m_PntOffset.y*m_fZoom; //平移坐标
-	XFORM xAffine = { fScaleX,0,0,fScaleY,fDx,fDy };
-
 	CRgn rgnScale;
-	CreateRgnFromWxRgn(rgnScale, pRgn, &xAffine);
+	CreateRgnFromWxRgn(rgnScale, pRgn, &m_xform);
 	if(rgnScale.m_hObject == NULL)
 		return;
 
@@ -1049,7 +1089,52 @@ void CWxMapCtrl::DrawIcon(CDC *pDC, CDC *pSrc, POINT &pt, int w, int h, CString 
 	};
 }
 
-void CWxMapCtrl::DrawIconRotate(CDC *pDC, CDC *pSrc, POINT &pt, int w, int h, double fangle, CString strName, CString strVal)
+void CWxMapCtrl::DrawVelocity(CDC *pDC, POINT &pt, int w, int h, int velo)
+{
+	if(velo<0) return;
+
+	CRect rect;
+	static int gap = 8;
+	static UINT vmax = 1000; // cm/s; 36km/h
+
+	COLORREF cr;
+
+	rect.left = pt.x+1.5*w;
+	rect.top = pt.y;
+	rect.right = rect.left+2*w;
+//	rect.bottom = rect.top+h;
+	rect.bottom = rect.top+10;
+	pDC->Rectangle(&rect);
+
+
+	int mw = (2*w-(3+gap))/gap;
+	mw = (mw<2?2:mw);
+	rect.left = pt.x+1.5*w+2 - mw -1;
+	rect.top = pt.y+2;
+//	rect.right = rect.left + (h-4)*0.618;
+	rect.right = rect.left+mw;
+//	rect.bottom = rect.top + h-4;
+	rect.bottom = rect.top + 6;
+
+	for(int i=0; i<gap; i++)
+	{
+		rect.OffsetRect(mw+1, 0);
+		if(velo>i*vmax/gap)
+		{
+			cr = colormap[22+3*i];
+			pDC->FillSolidRect(rect,cr);
+		}
+	}
+
+
+	CString str;
+	str.Format(_T("%.2f m/s"), (float)velo/100.00f);
+
+	DrawText(pDC, str, pt.x+w*1.5, pt.y, DT_LEFT|DT_BOTTOM);
+
+}
+
+void CWxMapCtrl::DrawIconRotate(CDC *pDC, CDC *pSrc, POINT &pt, int w, int h, double fangle, CString strName, CString strVal, INT velo)
 {
 	if(m_rectPic.PtInRect(pt))
 	{
@@ -1077,6 +1162,11 @@ void CWxMapCtrl::DrawIconRotate(CDC *pDC, CDC *pSrc, POINT &pt, int w, int h, do
 		{
 			//DrawText(pDC,strVal,pt.x+2+r, pt.y+2-r, DT_LEFT | DT_TOP);
 			DrawText(pDC,strVal,pt.x, pt.y+h, DT_CENTER | DT_TOP);
+		}
+		if(velo >= 0)
+		{
+			DrawVelocity(pDC, pt, w, h, velo);
+//			DrawText(pDC, strVelo, pt.x+w*1.5, pt.y, DT_LEFT|DT_VCENTER);
 		}
 	};
 }
@@ -1143,21 +1233,16 @@ void CWxMapCtrl::DrawCtrl(CDC *pDC, UINT drawMode)
 
 	CBitmap     memBitmap;
 	CWxDC      memDC(pDC, &m_rectRedraw, &memBitmap);
-	memDC.FillSolidRect(&m_rectRedraw, m_crBack);
-
-	CRect rectShow;
-	rectShow.left = m_PntOffset.x;
-	rectShow.top = m_PntOffset.y;
-	rectShow.right = (LONG)(m_rectPic.Width()/m_fZoom) + rectShow.left;
-	rectShow.bottom = (LONG)(m_rectPic.Height()/m_fZoom) + rectShow.top;
-
+	COLORREF crBk = (::GetFocus() == this->m_hWnd ? RGB(255,255,192):m_crBack);
+	memDC.FillSolidRect(&m_rectRedraw, crBk);
+	
 	memDC.SetBkMode(TRANSPARENT);
 
 	if(!m_imgLoader1.IsNull())
 	{
 		POINT ptLT, ptBR;
-		ptLT.x = (LONG)(m_rectPic.left - (m_PntOffset.x+m_pntPicOff.x)*m_fZoom);
-		ptLT.y = (LONG)(m_rectPic.top - (m_PntOffset.y+m_pntPicOff.y)*m_fZoom);
+		ptLT.x = (LONG)(m_xform.eDx - m_pntPicOff.x*m_fZoom);
+		ptLT.y = (LONG)(m_xform.eDy - m_pntPicOff.y*m_fZoom);
 		ptBR.x = (LONG)(m_imgLoader1.GetWidth()*m_fPicZoomX*m_fZoom) + ptLT.x;
 		ptBR.y = (LONG)(m_imgLoader1.GetHeight()*m_fPicZoomY*m_fZoom) + ptLT.y;
 
@@ -1165,11 +1250,13 @@ void CWxMapCtrl::DrawCtrl(CDC *pDC, UINT drawMode)
 		m_imgLoader1.Draw(memDC.m_hDC,CRect(ptLT,ptBR), CRect(0,0,m_imgLoader1.GetWidth(), m_imgLoader1.GetHeight()));
 		//DrawBmp();
 	}
+
+
 	for(UINT i=0; i<m_vecImg.size(); i++)
 	{
 		POINT ptLT, ptBR;
-		ptLT.x = (LONG)(m_rectPic.left - (m_PntOffset.x+m_vecImg[i]->offX)*m_fZoom);
-		ptLT.y = (LONG)(m_rectPic.top - (m_PntOffset.y+m_vecImg[i]->offY)*m_fZoom);
+		ptLT.x = (LONG)(m_xform.eDx - m_vecImg[i]->offX*m_fZoom);
+		ptLT.y = (LONG)(m_xform.eDy - m_vecImg[i]->offY*m_fZoom);
 		ptBR.x = (LONG)(m_vecImg[i]->GetWidth()*m_vecImg[i]->zoomX*m_fZoom) + ptLT.x;
 		ptBR.y = (LONG)(m_vecImg[i]->GetHeight()*m_vecImg[i]->zoomY*m_fZoom) + ptLT.y;
 
@@ -1184,13 +1271,12 @@ void CWxMapCtrl::DrawCtrl(CDC *pDC, UINT drawMode)
 
 	if(m_nShowRuler)
 	{
-		DrawRuler(&memDC, rectShow, m_rectPic, m_fZoom);
+		DrawRuler(&memDC);
 	}
-
 
 	if(m_nGridRadiu > 0)
 	{
-		DrawGridLine(&memDC, rectShow, m_rectPic, m_fZoom);
+		DrawGridLine(&memDC);
 //		DrawLogCoords(&memDC, 1000, 10000);
 	}
 
@@ -1248,7 +1334,8 @@ double CWxMapCtrl::CalcLogarithms(double inVal, double throshVal)
 	return outVal;
 }
 
-// 只显示数字，不显示标尺形状
+
+/*
 void CWxMapCtrl::DrawRuler(CDC *pDC,  CRect &rectShow, CRect &rectView, double dZoom)
 {
 	int nBorder = MAPCTRL_RULER_WIDTH/4;
@@ -1374,7 +1461,129 @@ void CWxMapCtrl::DrawRuler(CDC *pDC,  CRect &rectShow, CRect &rectView, double d
 	pDC->SelectObject(pOldFont);
 
 }
+*/
+// 只显示数字，不显示标尺形状
+void CWxMapCtrl::DrawRuler(CDC *pDC)
+{
+	int nGrid = (m_nGridRadiu>0?m_nGridRadiu:100);
 
+	int nBorder = MAPCTRL_RULER_WIDTH/4;
+	CRect rect2;
+
+	int xr,yb,top, bottom, left, right;		
+	int x, x1, y, y1,i;
+	double dGridX,dGridY;
+	dGridX = (double)nGrid*m_xform.eM11;
+	dGridY = (double)nGrid*m_xform.eM22;
+
+	CPen pen;
+	pen.CreatePen(PS_SOLID, 1, m_crLine); 
+	CPen *pOldPen = pDC->SelectObject(&pen); 
+
+	CFont *pOldFont;
+	pOldFont = (CFont *)pDC->SelectObject(&m_font);	
+	pDC->SetBkMode(TRANSPARENT);
+	pDC->SetTextColor(m_crLine);
+	rect2 = CRect(0,0,0,0);
+
+	CString str =  _T("8888");
+	pDC->DrawText(str, &rect2, DT_CALCRECT);
+	int w = rect2.Width();
+
+	while(dGridX<w || dGridY<w){dGridX *= 2.00f;dGridY *= 2.00f;nGrid*=2;}
+
+	//水平标尺
+	if(m_nShowRuler & MAPCTRL_SHOW_HRULER)
+	{
+		xr = (int)(m_rectUser.right * m_fZoom + m_xform.eDx);
+
+		top = m_rectPic.top - MAPCTRL_RULER_WIDTH;//+nBorder;
+		left = m_rectPic.left;
+		right = m_rectPic.right;
+
+		if(m_PntOffset.x < 0)
+		{
+			left +=  (int)(- m_PntOffset.x*m_fZoom);
+		}
+
+		if(xr < right)
+		{
+			right = xr;
+		}
+
+		y = m_rectPic.top - nBorder+1;
+		y1 = m_rectPic.top-1;
+
+		i = (int)(-m_xform.eDx/dGridX);
+
+		double xv;
+		while(1)
+		{
+			x = (INT)(i*dGridX+m_xform.eDx);
+
+			xv = CalcLogarithms((double)(i*nGrid)/100.00f, m_dLogThresholdX);
+
+			i ++;
+
+			if(x > m_rectPic.right)
+				break;
+
+			pDC->MoveTo(x, y);
+			pDC->LineTo(x, y1);
+
+			str.Format(_T("%g"), (xv>=0) ? xv :(-xv));
+			DrawText(pDC, str, x, y-1, DT_CENTER|DT_BOTTOM);
+		}
+	}
+
+	//垂直标尺
+	if(m_nShowRuler & MAPCTRL_SHOW_VRULER)
+	{
+		yb = (int)(m_rectUser.right * m_fZoom  + m_xform.eDy);
+
+		left = m_rectPic.left - MAPCTRL_RULER_WIDTH;//+nBorder;
+		top = m_rectPic.top;
+		bottom = m_rectPic.bottom;
+
+		if(m_PntOffset.y < 0)
+		{
+			top += (int)(-m_PntOffset.y*m_fZoom);
+		}
+
+		if(yb < bottom)
+		{
+			bottom = yb;
+		}
+		x = m_rectPic.left - nBorder+1;
+		x1 = m_rectPic.left-1;
+
+		i = (int)(- m_xform.eDy /dGridY);
+
+		double yv;
+		while(1)
+		{
+			y = (INT)(i*dGridY+m_xform.eDy);
+			yv = CalcLogarithms((double)(i*nGrid)/100.00f, m_dLogThresholdY);
+
+			i ++;
+
+			if(y > m_rectPic.bottom)
+				break;
+
+			pDC->MoveTo(x, y);
+			pDC->LineTo(x1, y);
+
+			str.Format(_T("%g"), (yv>=0) ? yv :(-yv));
+
+			DrawText(pDC, str, m_rectPic.left - MAPCTRL_RULER_WIDTH/2, y, DT_CENTER|DT_VCENTER);
+		}
+	}
+
+
+	pDC->SelectObject(pOldPen);
+	pDC->SelectObject(pOldFont);
+
+}
 /*
 
 void CWxMapCtrl::DrawRuler(CDC *pDC,  CRect &rectShow, CRect &rectView, double dZoom)
@@ -1626,7 +1835,163 @@ void CWxMapCtrl::FillRect2View(CDC *pDC, CHPRect &rectPix, COLORREF cr, CHPRect 
 }
 
 
+void CWxMapCtrl::DrawGridLine(CDC *pDC)
+{
+	int x, y, x1,y1, x2,y2, i;
+	CPen pen;
+	pen.CreatePen(PS_DOT, 1, m_crGrid); 
+	CPen *pOldPen = pDC->SelectObject(&pen); 
 
+	double dGridX,dGridY;
+	dGridX = (double)m_nGridRadiu*m_xform.eM11;
+	dGridY = (double)m_nGridRadiu*m_xform.eM22;
+
+	while(dGridX<10.00f || dGridY<10.00f){dGridX *= 2.00f;dGridY *= 2.00f;}
+
+	//在显示区域内绘制网格线
+	y1 = m_rectPic.top+1;
+	y2 = m_rectPic.bottom-1;
+	x1 = m_rectPic.left+1;
+	x2 = m_rectPic.right-1;
+
+
+	//绘制纵向格线
+	i = (int)(-m_xform.eDx/dGridX);
+	while(1)
+	{
+		x = (LONG)(i*dGridX + m_xform.eDx);
+		i++;
+
+		//在显示区域内绘制网格线
+		if(x<x1)		continue;
+		else if(x>x2)	break;
+		pDC->MoveTo(x, y1);
+		pDC->LineTo(x, y2);
+
+	};
+
+	//绘制横向格线
+	i = (int)((-m_xform.eDy)/dGridY);
+	while(1)
+	{
+		y = (LONG)(i*dGridY + m_xform.eDy);
+		i++;
+
+		//在显示区域内绘制网格线
+		if(y<y1)		continue;
+		else if(y > y2)	break;
+		pDC->MoveTo(x1, y);
+		pDC->LineTo(x2, y);
+	};
+
+	//坐标轴
+	CPen pen1;
+	pen1.CreatePen(PS_SOLID, 1, RGB(128,0,0)); 
+	pDC->SelectObject(&pen1);
+
+	x = (LONG)m_xform.eDx; 
+	if(x>x1 && x<x2)
+	{
+		pDC->MoveTo(x, m_rectPic.top+1);
+		pDC->LineTo(x, m_rectPic.bottom-1);
+	}
+
+	y = (LONG)m_xform.eDy;
+	if(y>y1 && y<y2)
+	{
+		pDC->MoveTo(m_rectPic.left+1, y);
+		pDC->LineTo(m_rectPic.right-1, y);
+	}
+
+	pDC->SelectObject(pOldPen);
+}
+/*
+void CWxMapCtrl::DrawGridLine(CDC *pDC,  CRect &rectShow, CRect &rectView, double dZoom)
+{
+	//网格线从图像的TopLeft开始
+
+	int x0=0;
+	int y0=0;
+
+	int x, y, x1,y1, i;
+	CPen pen;
+	pen.CreatePen(PS_DOT, 1, m_crGrid); 
+	CPen *pOldPen = pDC->SelectObject(&pen); 
+
+	double dGridX,dGridY,dGridX0, dGridY0;
+	dGridX = (double)m_nGridRadiu*m_coefx*dZoom/100.00f;
+	dGridX0 = x0*dZoom - rectShow.left*dZoom + rectView.left;
+	dGridY = (double)m_nGridRadiu*m_coefy*dZoom/100.00f;
+	dGridY0 = y0*dZoom - rectShow.top*dZoom + rectView.top;
+
+	while(dGridX<10.00f || dGridY<10.00f){dGridX *= 2.00f;dGridY *= 2.00f;}
+
+	//在显示区域内绘制网格线
+
+	i = (int)(-dGridX0/dGridX);
+
+	y = rectView.top+1;
+	y1 = rectView.bottom-1;
+	while(1)
+	{
+		x = (LONG)(i*dGridX + dGridX0);
+		i++;
+
+		//在显示区域内绘制网格线
+		if(x<rectView.left) continue;
+		else if(x>rectView.right)
+			break;
+		pDC->MoveTo(x, y);
+		pDC->LineTo(x, y1);
+
+	};
+
+	//在显示区域内绘制网格线
+
+	i = (int)((-dGridY0)/dGridY);
+
+	x = rectView.left+1;
+	x1 = rectView.right-1;
+
+	while(1)
+	{
+		y = (LONG)(i*dGridY + dGridY0);
+
+		i++;
+
+		//在显示区域内绘制网格线
+		if(y<rectView.top) continue;
+		else if(y > rectView.bottom)
+			break;
+
+		pDC->MoveTo(x, y);
+		pDC->LineTo(x1, y);
+	};
+
+	//坐标轴
+	CPen pen1;
+	pen1.CreatePen(PS_SOLID, 1, RGB(128,0,0)); 
+	pDC->SelectObject(&pen1);
+	
+	x = (LONG)dGridX0; 
+	if(x>rectView.left && x<rectView.right)
+	{
+		pDC->MoveTo(x, rectView.top+1);
+		pDC->LineTo(x, rectView.bottom-1);
+	}
+
+	y = (LONG)dGridY0;
+	if(y>rectView.top && y<rectView.bottom)
+	{
+		pDC->MoveTo(rectView.left+1, y);
+		pDC->LineTo(rectView.right-1, y);
+	}
+
+	pDC->SelectObject(pOldPen);
+
+}
+*/
+/*
 void CWxMapCtrl::DrawGridLine(CDC *pDC,  CRect &rectShow, CRect &rectView, double dZoom)
 {
 	//网格线从图像中心向四周发散
@@ -1730,7 +2095,7 @@ void CWxMapCtrl::DrawGridLine(CDC *pDC,  CRect &rectShow, CRect &rectView, doubl
 	pDC->SelectObject(pOldPen);
 
 }
-
+*/
 /*
 void CWxMapCtrl::DrawLogCoords(CDC* pDC, double StartFreq, double StopFreq)
 {
@@ -2408,4 +2773,138 @@ BOOL CWxMapCtrl::SaveUserRect(LPCTSTR lpszFilename)
 	m_bRectsNeedRecalculate = TRUE;
 
 	return (img.Save(lpszFilename) == S_OK);
+}
+
+INT CWxMapCtrl::GetRuler()
+{
+	return m_nShowRuler;
+};
+
+INT CWxMapCtrl::GetGrid()
+{
+	return m_nGridRadiu;
+};
+
+INT CWxMapCtrl::GetScale()
+{
+	return g_validMapScale[m_nScaleIndex];
+};
+
+BOOL CWxMapCtrl::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
+	m_nScaleIndex += (zDelta>0?-1:(zDelta<0?1:0));
+	if(m_nScaleIndex < 0) m_nScaleIndex = 0;
+	else if(m_nScaleIndex > 19) m_nScaleIndex = 19;
+	if(m_nGridRadiu!=0)
+		m_nGridRadiu = g_validMapScale[m_nScaleIndex];
+
+	SendUserMessage(MNOTICE_VCHANGE,(LPARAM)1);
+
+	float fz = (float)(100.00f / (double)g_validMapScale[m_nScaleIndex]);
+	if(fz != m_fZoom)
+	{
+		m_PntOffset.x = (LONG)((double)(m_PntOffset.x)*(m_fZoom/fz));
+		m_PntOffset.y = (LONG)((double)(m_PntOffset.y)*(m_fZoom/fz));
+
+		m_fZoom = fz;
+		RecalXform();
+		Invalidate();
+	}
+	return CWnd::OnMouseWheel(nFlags, zDelta, pt);
+}
+
+BOOL CWxMapCtrl::PreTranslateMessage(MSG* pMsg)
+{
+	// TODO: 在此添加专用代码和/或调用基类
+	if (pMsg->message==WM_KEYDOWN)
+	{
+		switch (pMsg->wParam)
+		{
+		case VK_HOME:case 'H':
+			SetCenterPos(0.00f,0.00f);
+			break;
+		case VK_UP:
+			m_PntOffset.y -= (int)((double)m_nGridRadiu*m_coefy/100.00f);
+			RecalXform();
+			Invalidate();
+			break;
+		case VK_DOWN:
+			m_PntOffset.y += (int)((double)m_nGridRadiu*m_coefy/100.00f);
+			RecalXform();
+			Invalidate();
+			break;
+		case VK_LEFT:
+			m_PntOffset.x -= (int)((double)m_nGridRadiu*m_coefx/100.00f);
+			RecalXform();
+			Invalidate();
+			break;
+		case VK_RIGHT:
+			m_PntOffset.x += (int)((double)m_nGridRadiu*m_coefx/100.00f);
+			RecalXform();
+			Invalidate();
+			break;
+/*		case VK_NUMPAD1:
+			if(::GetKeyState(VK_NUMLOCK)>0)
+			{
+				m_PntOffset.x -= (int)((double)m_nGridRadiu*m_coefx/100.00f);
+				m_PntOffset.y += (int)((double)m_nGridRadiu*m_coefy/100.00f);
+				RecalXform();
+				Invalidate();
+			}
+			break;
+		case VK_NUMPAD3:
+			if(::GetKeyState(VK_NUMLOCK)>0)
+			{
+				m_PntOffset.x += (int)((double)m_nGridRadiu*m_coefx/100.00f);
+				m_PntOffset.y += (int)((double)m_nGridRadiu*m_coefy/100.00f);
+				RecalXform();
+				Invalidate();
+			}
+			break;
+		case VK_NUMPAD7:
+			if(::GetKeyState(VK_NUMLOCK)>0)
+			{
+				m_PntOffset.x -= (int)((double)m_nGridRadiu*m_coefx/100.00f);
+				m_PntOffset.y -= (int)((double)m_nGridRadiu*m_coefy/100.00f);
+				RecalXform();
+				Invalidate();
+			}
+			break;
+		case VK_NUMPAD9:
+			if(::GetKeyState(VK_NUMLOCK)>0)
+			{
+				m_PntOffset.x += (int)((double)m_nGridRadiu*m_coefx/100.00f);
+				m_PntOffset.y -= (int)((double)m_nGridRadiu*m_coefy/100.00f);
+				RecalXform();
+				Invalidate();
+
+			}
+			break;*/
+		case 'G':
+		{
+			UINT nNewGrid = (::GetKeyState(VK_CONTROL)<0?m_nGridRadiu*2:m_nGridRadiu/2);
+			nNewGrid = (nNewGrid>10000?0:(nNewGrid<2?2:nNewGrid));
+			ShowGrid(nNewGrid);
+			SendUserMessage(MNOTICE_VCHANGE,(LPARAM)1);
+		}
+		break;
+		case 'R':
+			m_nShowRuler ++;
+			m_nShowRuler &= 0x3;
+			m_bRectsNeedRecalculate = TRUE;
+			SendUserMessage(MNOTICE_VCHANGE,(LPARAM)1);
+			Invalidate();
+			break;
+		case 'Z':
+		{
+			INT nIdx = (::GetKeyState(VK_CONTROL)<0?m_nScaleIndex+1:m_nScaleIndex-1);
+			nIdx = (nIdx>19?19:(nIdx<0?0:nIdx));
+			ShowScale(g_validMapScale[nIdx]);
+			SendUserMessage(MNOTICE_VCHANGE,(LPARAM)1);
+		}
+		break;
+		}
+	}
+	return CWnd::PreTranslateMessage(pMsg);
 }
