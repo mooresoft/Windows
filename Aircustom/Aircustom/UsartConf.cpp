@@ -64,6 +64,35 @@ unsigned char CUsartConf::QueryDevice(unsigned char* msg)
 	return len;
 }
 
+unsigned char CUsartConf::SetSpectrum(unsigned char* msg, unsigned char up_down)
+{
+	unsigned char len;
+	USART_HEADER *pHeader = NULL;
+	USART_END    *pEnd = NULL;
+
+	pHeader = (USART_HEADER*)msg;
+	pHeader->header = PKG_HEAD;
+	pHeader->cmd = SET_SPECTRUM;
+	pHeader->len = 1;
+	len = sizeof(USART_HEADER);
+
+	msg[len] = up_down;
+	len++;
+
+	pEnd = (USART_END*)(msg + len);
+	pEnd->checksum = CheckSum(msg, len);
+
+	len += 2;
+
+	len = encode_data(msg + 1, len - 1) + 1;
+
+	*(msg + len) = PKG_END;
+	len++;
+
+	memset(&m_devParam, 0, sizeof(m_devParam));
+	return len;
+}
+
 unsigned char CUsartConf::ConfDevice(unsigned char* msg, unsigned char* dest_mac, DEVICE_PARAM& dev_param)
 {
 	unsigned char len;

@@ -140,6 +140,7 @@ BEGIN_MESSAGE_MAP(CVisualcustomDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_RADIO_TDOA, &CVisualcustomDlg::OnBnClickedRadioTdoa)
 	ON_BN_CLICKED(IDC_RADIO_TWR, &CVisualcustomDlg::OnBnClickedRadioTwr)
 	ON_BN_CLICKED(IDC_BTN_ENTERCLI, &CVisualcustomDlg::OnBnClickedBtnEntercli)
+	ON_NOTIFY(UDN_DELTAPOS, IDC_SPIN_SPECTRUM, &CVisualcustomDlg::OnDeltaposSpinSpectrum)
 END_MESSAGE_MAP()
 
 
@@ -810,4 +811,26 @@ void CVisualcustomDlg::OnBnClickedRadioTwr()
 void CVisualcustomDlg::OnBnClickedBtnEntercli()
 {
 	//EnterCli
+}
+
+
+void CVisualcustomDlg::OnDeltaposSpinSpectrum(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMUPDOWN pNMUpDown = reinterpret_cast<LPNMUPDOWN>(pNMHDR);
+
+	unsigned char buf[USART_BUF_SIZE] = { 0 };
+	unsigned char len = 0;
+	
+	if (1 == pNMUpDown->iDelta) // 如果此值为1 , 说明点击了Spin的往下箭头 
+	{
+		len = m_usartconf.SetSpectrum(buf, 0);
+		m_serial.WriteSerial(buf, len);
+	}
+	else if (-1 == pNMUpDown->iDelta) // 如果此值为-1 , 说明点击了Spin的往上箭头 
+	{
+		len = m_usartconf.SetSpectrum(buf, 1);
+		m_serial.WriteSerial(buf, len);
+	}
+
+	*pResult = 0;
 }

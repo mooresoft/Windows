@@ -20,6 +20,8 @@ typedef enum _ENUM_MGMT_TYPE
 	UPGRADE_PRE  = 0x07,
 	UPGRADE_DEV  = 0x08,
 	MGMT_ACK     = 0x09,
+	OTA_ACK      = 0x0A,
+	SET_SPECTRUM = 0x0B,
 	MGMT_UNKNOWN = 0xFD,
 }UWB_MGMT_TYPE;
 
@@ -38,6 +40,7 @@ typedef struct _STRU_DEVICE_PARAM
 {
 	unsigned char  sys_type;
 	unsigned char  rf_mode;
+	unsigned char  spectrum;
 	unsigned char  host_mac[2];
 	unsigned char  anchors_mac[20];
 	unsigned short sleep_time;	
@@ -93,6 +96,7 @@ public:
 	unsigned char PowerTest(unsigned char* msg);
 	unsigned char PreUpDevice(unsigned char* msg);
 	unsigned char UpgradeDevice(unsigned char* msg, unsigned char seq, unsigned char msgtype, unsigned char* pbin, unsigned char sendlen);
+	unsigned char SetSpectrum(unsigned char* msg, unsigned char up_down);
 
     unsigned char ParseUart(unsigned char* szCmd, unsigned char len);
 

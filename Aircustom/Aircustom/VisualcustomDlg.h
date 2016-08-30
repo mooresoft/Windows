@@ -105,4 +105,5 @@ public:
 	CListCtrl m_lstDevice;
 	CString m_strDevId;
 	afx_msg void OnBnClickedBtnEntercli();
+	afx_msg void OnDeltaposSpinSpectrum(NMHDR *pNMHDR, LRESULT *pResult);
 };
