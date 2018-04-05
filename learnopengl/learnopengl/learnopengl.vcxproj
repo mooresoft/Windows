@@ -133,6 +133,9 @@
     <ClCompile Include="learnopengl.cpp" />
     <ClCompile Include="src\glad.c" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Shader.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
