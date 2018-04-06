@@ -94,6 +94,17 @@ public:
 		glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
 	}
 
+	void setMat4(const char *name, const glm::mat4 & m)
+	{
+		GLint loc = glGetUniformLocation(ID, name);
+		if (-1 == loc)
+		{
+			return;
+		}
+
+		glUniformMatrix4fv(loc, 1, GL_FALSE, &m[0][0]);
+	}
+
 private:
 	// utility function for checking shader compilation/linking errors.
 	// ------------------------------------------------------------------------
