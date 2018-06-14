@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MultiLanguage", "MultiLanguage\MultiLanguage.vcxproj", "{D4884D3C-4DDE-4852-A955-5118B7FBAB8E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "chinese", "chinese\chinese.vcxproj", "{BB082FEC-20A3-4A50-906F-75F562E8CBBD}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "english", "english\english.vcxproj", "{7740FC9A-92A1-4746-9937-47601311DC9C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D4884D3C-4DDE-4852-A955-5118B7FBAB8E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D4884D3C-4DDE-4852-A955-5118B7FBAB8E}.Debug|Win32.Build.0 = Debug|Win32
+		{D4884D3C-4DDE-4852-A955-5118B7FBAB8E}.Release|Win32.ActiveCfg = Release|Win32
+		{D4884D3C-4DDE-4852-A955-5118B7FBAB8E}.Release|Win32.Build.0 = Release|Win32
+		{BB082FEC-20A3-4A50-906F-75F562E8CBBD}.Debug|Win32.ActiveCfg = Debug|Win32
+		{BB082FEC-20A3-4A50-906F-75F562E8CBBD}.Debug|Win32.Build.0 = Debug|Win32
+		{BB082FEC-20A3-4A50-906F-75F562E8CBBD}.Release|Win32.ActiveCfg = Release|Win32
+		{BB082FEC-20A3-4A50-906F-75F562E8CBBD}.Release|Win32.Build.0 = Release|Win32
+		{7740FC9A-92A1-4746-9937-47601311DC9C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{7740FC9A-92A1-4746-9937-47601311DC9C}.Debug|Win32.Build.0 = Debug|Win32
+		{7740FC9A-92A1-4746-9937-47601311DC9C}.Release|Win32.ActiveCfg = Release|Win32
+		{7740FC9A-92A1-4746-9937-47601311DC9C}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
