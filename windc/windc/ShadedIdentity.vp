@@ -1,0 +1,14 @@
+#version 330
+
+
+layout (location = 0) in vec2 vetex_pos;
+layout (location = 1) in vec2 tex_pos;
+
+out vec2 fs_tex_pos;
+uniform mat4 msmatrix;
+
+void main(void)
+{
+    fs_tex_pos = tex_pos;
+    gl_Position = msmatrix * vec4(vetex_pos, 0.5, 1.0);	
+}
