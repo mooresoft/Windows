@@ -120,7 +120,7 @@ BOOL CTransparentDlg::OnInitDialog()
 		{   
 			//pFunc(m_hWnd, 0, 0, LWA_ALPHA);		//全透明
 			//pFunc(m_hWnd, 0, 255, LWA_ALPHA);		//不透明
-			pFunc(m_hWnd, 0, 100, LWA_ALPHA);		//半透明			
+			pFunc(m_hWnd, 0, 128, LWA_ALPHA);		//半透明			
 		}   
 		FreeLibrary(hInst);   
 		hInst = NULL;   
@@ -181,7 +181,14 @@ void CTransparentDlg::OnPaint()
 	}
 	else
 	{
-		
+		CPaintDC dc(this); // device context for painting
+		// TODO: Add your message handler code here
+		// Do not call CDialogEx::OnPaint() for painting messages
+		CRect rc;
+
+		GetClientRect(&rc);
+
+		dc.FillSolidRect(rc,RGB(0, 0, 0));
 		CDialogEx::OnPaint();
 	}
 }
