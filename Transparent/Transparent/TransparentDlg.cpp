@@ -99,8 +99,8 @@ BOOL CTransparentDlg::OnInitDialog()
 
 	// TODO: Add extra initialization here
 
-	SetWindowLong(m_hWnd,GWL_EXSTYLE,GetWindowLong(m_hWnd,GWL_EXSTYLE)^0x80000);      
-	HINSTANCE  hInst = LoadLibrary(_T("User32.DLL"));    
+	SetWindowLong(m_hWnd,GWL_EXSTYLE,GetWindowLong(m_hWnd,GWL_EXSTYLE) | 0x80000);
+	HMODULE  hInst = LoadLibrary(_T("User32.DLL"));    
 	if    (hInst != NULL)   
 	{   
 		typedef BOOL (WINAPI *MYFUNC)(HWND, COLORREF, BYTE, DWORD);   
@@ -110,7 +110,8 @@ BOOL CTransparentDlg::OnInitDialog()
 		{   
 			//pFunc(m_hWnd, 0, 0, LWA_ALPHA);		//全透明
 			//pFunc(m_hWnd, 0, 255, LWA_ALPHA);		//不透明
-			pFunc(m_hWnd, 0, 100, LWA_ALPHA);		//半透明
+			//pFunc(m_hWnd, 0, 100, LWA_ALPHA);		//半透明
+			pFunc(m_hWnd,RGB(0,255,0),0,LWA_COLORKEY);
 			
 		}   
 		FreeLibrary(hInst);   
@@ -171,6 +172,14 @@ void CTransparentDlg::OnPaint()
 	}
 	else
 	{
+		CPaintDC dc(this); // device context for painting
+		CRect rc;
+
+		GetClientRect(&rc);
+
+		dc.FillSolidRect(rc,RGB(0,255,0));
+		dc.SetBkMode(TRANSPARENT);
+		dc.TextOut(0,0,_T("afdsafdafds"));
 		CDialogEx::OnPaint();
 	}
 }
