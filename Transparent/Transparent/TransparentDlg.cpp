@@ -52,6 +52,7 @@ CTransparentDlg::CTransparentDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CTransparentDlg::IDD, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	m_pFore = NULL;
 }
 
 void CTransparentDlg::DoDataExchange(CDataExchange* pDX)
@@ -63,6 +64,8 @@ BEGIN_MESSAGE_MAP(CTransparentDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_WM_SIZE()
+	ON_WM_MOVE()
 END_MESSAGE_MAP()
 
 
@@ -98,6 +101,13 @@ BOOL CTransparentDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
 	// TODO: Add extra initialization here
+	CenterWindow();
+	m_pFore = new CDlgFore(this);
+	m_pFore->Create(CDlgFore::IDD, this);
+	CRect rect;
+	GetWindowRect(rect);
+	m_pFore->MoveWindow(rect);
+	
 
 	SetWindowLong(m_hWnd,GWL_EXSTYLE,GetWindowLong(m_hWnd,GWL_EXSTYLE) | 0x80000);
 	HMODULE  hInst = LoadLibrary(_T("User32.DLL"));    
@@ -110,14 +120,13 @@ BOOL CTransparentDlg::OnInitDialog()
 		{   
 			//pFunc(m_hWnd, 0, 0, LWA_ALPHA);		//全透明
 			//pFunc(m_hWnd, 0, 255, LWA_ALPHA);		//不透明
-			//pFunc(m_hWnd, 0, 100, LWA_ALPHA);		//半透明
-			pFunc(m_hWnd,RGB(0,255,0),0,LWA_COLORKEY);
-			
+			pFunc(m_hWnd, 0, 100, LWA_ALPHA);		//半透明			
 		}   
 		FreeLibrary(hInst);   
 		hInst = NULL;   
 	}
-
+	ShowWindow(SW_SHOW);
+	m_pFore->ShowWindow(SW_SHOW);
 	/*
 	所需函数原型：
 
@@ -172,14 +181,7 @@ void CTransparentDlg::OnPaint()
 	}
 	else
 	{
-		CPaintDC dc(this); // device context for painting
-		CRect rc;
-
-		GetClientRect(&rc);
-
-		dc.FillSolidRect(rc,RGB(0,255,0));
-		dc.SetBkMode(TRANSPARENT);
-		dc.TextOut(0,0,_T("afdsafdafds"));
+		
 		CDialogEx::OnPaint();
 	}
 }
@@ -191,3 +193,42 @@ HCURSOR CTransparentDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+
+
+void CTransparentDlg::OnSize(UINT nType, int cx, int cy)
+{
+	CDialogEx::OnSize(nType, cx, cy);
+
+	// TODO: Add your message handler code here
+	if (NULL != m_pFore)
+	{
+		CRect rect;
+		GetWindowRect(rect);
+		m_pFore->MoveWindow(rect);
+	}	
+}
+
+
+void CTransparentDlg::OnCancel()
+{
+	// TODO: Add your specialized code here and/or call the base class
+	if (NULL != m_pFore)
+	{
+		m_pFore->SendMessage(WM_CLOSE);
+	}
+	CDialogEx::OnCancel();
+}
+
+
+void CTransparentDlg::OnMove(int x, int y)
+{
+	CDialogEx::OnMove(x, y);
+
+	// TODO: Add your message handler code here
+	if (NULL != m_pFore)
+	{
+		CRect rect;
+		GetWindowRect(rect);
+		m_pFore->MoveWindow(rect);
+	}	
+}
