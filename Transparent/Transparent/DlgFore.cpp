@@ -34,6 +34,7 @@ BEGIN_MESSAGE_MAP(CDlgFore, CDialogEx)
 	ON_WM_CLOSE()
 	ON_WM_MOUSEMOVE()
 	ON_WM_MOUSELEAVE()
+	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
 
@@ -139,4 +140,12 @@ void CDlgFore::OnMouseLeave()
 void CDlgFore::SetTextBkColor(const COLORREF& clr)
 {
 	m_textBkColor = clr;
+}
+
+
+BOOL CDlgFore::OnEraseBkgnd(CDC* pDC)
+{
+	// TODO: Add your message handler code here and/or call default
+	return TRUE;
+	return CDialogEx::OnEraseBkgnd(pDC);
 }

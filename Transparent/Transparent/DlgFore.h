@@ -30,4 +30,5 @@ public:
 	afx_msg void OnClose();
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnMouseLeave();
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 };
