@@ -23,6 +23,7 @@ public:
 protected:
 	HICON m_hIcon;
 	CDlgFore* m_pFore;
+	CDlgFore* m_pFore1;
 	// Generated message map functions
 	virtual BOOL OnInitDialog();
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);

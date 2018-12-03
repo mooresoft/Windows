@@ -53,6 +53,7 @@ CTransparentDlg::CTransparentDlg(CWnd* pParent /*=NULL*/)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	m_pFore = NULL;
+	m_pFore1 = NULL;
 }
 
 void CTransparentDlg::DoDataExchange(CDataExchange* pDX)
@@ -105,9 +106,14 @@ BOOL CTransparentDlg::OnInitDialog()
 	CenterWindow();
 	m_pFore = new CDlgFore(this);
 	m_pFore->Create(CDlgFore::IDD, this);
+	m_pFore1 = new CDlgFore(this);
+	m_pFore1->SetTextBkColor(RGB(255, 255, 255));
+	m_pFore1->Create(CDlgFore::IDD, this);
+	
 	CRect rect;
 	GetWindowRect(rect);
 	m_pFore->MoveWindow(rect);
+	m_pFore1->MoveWindow(rect.left, rect.top + 10, rect.Width(), rect.Height() - 20);
 	
 
 	SetWindowLong(m_hWnd,GWL_EXSTYLE,GetWindowLong(m_hWnd,GWL_EXSTYLE) | 0x80000);
@@ -128,6 +134,7 @@ BOOL CTransparentDlg::OnInitDialog()
 	}
 	ShowWindow(SW_SHOW);
 	m_pFore->ShowWindow(SW_SHOW);
+	m_pFore1->ShowWindow(SW_SHOW);
 	/*
 	所需函数原型：
 
