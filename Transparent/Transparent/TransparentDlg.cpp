@@ -66,6 +66,7 @@ BEGIN_MESSAGE_MAP(CTransparentDlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 	ON_WM_SIZE()
 	ON_WM_MOVE()
+	ON_WM_MOUSEMOVE()
 END_MESSAGE_MAP()
 
 
@@ -120,7 +121,7 @@ BOOL CTransparentDlg::OnInitDialog()
 		{   
 			//pFunc(m_hWnd, 0, 0, LWA_ALPHA);		//全透明
 			//pFunc(m_hWnd, 0, 255, LWA_ALPHA);		//不透明
-			pFunc(m_hWnd, 0, 128, LWA_ALPHA);		//半透明			
+			pFunc(m_hWnd, 0, 0, LWA_ALPHA);			//半透明			
 		}   
 		FreeLibrary(hInst);   
 		hInst = NULL;   
@@ -238,4 +239,12 @@ void CTransparentDlg::OnMove(int x, int y)
 		GetWindowRect(rect);
 		m_pFore->MoveWindow(rect);
 	}	
+}
+
+
+void CTransparentDlg::OnMouseMove(UINT nFlags, CPoint point)
+{
+	// TODO: Add your message handler code here and/or call default
+
+	CDialogEx::OnMouseMove(nFlags, point);
 }

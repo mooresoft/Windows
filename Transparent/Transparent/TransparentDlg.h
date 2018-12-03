@@ -33,4 +33,5 @@ public:
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	virtual void OnCancel();
 	afx_msg void OnMove(int x, int y);
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 };
