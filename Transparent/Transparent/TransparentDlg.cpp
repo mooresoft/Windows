@@ -108,7 +108,7 @@ BOOL CTransparentDlg::OnInitDialog()
 	m_pFore->Create(CDlgFore::IDD, this);
 	m_pFore1 = new CDlgFore(this);
 	m_pFore1->SetTextBkColor(RGB(255, 255, 255));
-	m_pFore1->Create(CDlgFore::IDD, this);
+	m_pFore1->Create(CDlgFore::IDD, m_pFore);
 	
 	CRect rect;
 	GetWindowRect(rect);
